@@ -14,7 +14,20 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
+	// Moving Platform Speed Per Tick
 	UPROPERTY(EditAnywhere)
 		float Speed = 20.f;
+
+	UPROPERTY(EditAnywhere, meta = (MakeEditWidget))
+		FVector TargetLocation = FVector(0, 0, 100);
+	
+	UPROPERTY(EditAnywhere, meta = (MakeEditWidget))
+		FVector OriginLocation = FVector(0, 0, 0);
+
+	FVector StartLocation;
+	FVector GlobalTargetLocation;
 };
