@@ -38,11 +38,25 @@ void ACMovingPlatform::BeginPlay()
 	GlobalTargetLocation = GetTransform().TransformPosition(TargetLocation);			//startLocation + TargetLocation
 }
 
+void ACMovingPlatform::IncreaseActive()
+{
+	Active++;
+}
+
+void ACMovingPlatform::DecreaseActive()
+{
+	if(Active > 0)
+		Active--;
+}
+
 void ACMovingPlatform::Tick(float DeltaTime)
 {
 	// 위치이동
 	Super::Tick(DeltaTime);
 	
+	// Active가 1 이상인 경우에만
+	CheckFalse(Active > 0);
+
 	// 서버에서만 이동
 	if (HasAuthority() == true)		//GetLocalRole() == ENetRole::ROLE_Authority
 	{
