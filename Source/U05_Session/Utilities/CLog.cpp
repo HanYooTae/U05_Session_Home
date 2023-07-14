@@ -1,6 +1,6 @@
 #include "CLog.h"
 
-DEFINE_LOG_CATEGORY_STATIC(GameProject, Display, All);
+DEFINE_LOG_CATEGORY_STATIC(GameProject, Warning, All);
 
 void CLog::Print(int32 InValue, int32 InKey, float InDuration, FColor InColor)
 {
@@ -29,27 +29,27 @@ void CLog::Print(const FRotator& InValue, int32 InKey, float InDuration, FColor 
 
 void CLog::Log(int32 InValue)
 {
-	UE_LOG(GameProject, Display, L"%d", InValue);
+	UE_LOG(GameProject, Warning, L"%d", InValue);
 }
 
 void CLog::Log(float InValue)
 {
-	UE_LOG(GameProject, Display, L"%.3f", InValue);
+	UE_LOG(GameProject, Warning, L"%.3f", InValue);
 }
 
 void CLog::Log(const FString& InValue)
 {
-	UE_LOG(GameProject, Display, L"%s", *InValue);
+	UE_LOG(GameProject, Warning, L"%s", *InValue);
 }
 
 void CLog::Log(const FVector& InValue)
 {
-	UE_LOG(GameProject, Display, L"%s", *InValue.ToString());
+	UE_LOG(GameProject, Warning, L"%s", *InValue.ToString());
 }
 
 void CLog::Log(const FRotator& InValue)
 {
-	UE_LOG(GameProject, Display, L"%s", *InValue.ToString());
+	UE_LOG(GameProject, Warning, L"%s", *InValue.ToString());
 }
 
 void CLog::Log(const UObject* InObject)
@@ -61,7 +61,7 @@ void CLog::Log(const UObject* InObject)
 	{
 		str.Append(InObject->GetName());
 		str.Append(" is Valid");
-		UE_LOG(GameProject, Display, L"%s", *str);
+		UE_LOG(GameProject, Warning, L"%s", *str);
 	}
 	else
 	{
@@ -75,5 +75,5 @@ void CLog::Log(const FString& InFunctionName, int32 InLineNumber)
 	str.Append(InFunctionName);
 	str.Append(", ");
 	str.Append(FString::FromInt(InLineNumber));
-	UE_LOG(GameProject, Display, L"%s", *str);
+	UE_LOG(GameProject, Warning, L"%s", *str);
 }
