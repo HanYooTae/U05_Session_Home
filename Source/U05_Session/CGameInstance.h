@@ -14,9 +14,16 @@ public:
 	virtual void Init() override;
 
 public:
+	UFUNCTION(BlueprintCallable, Exec)
+		void LoadMenu();
+
 	UFUNCTION(Exec)
 		void Host();
 
 	UFUNCTION(Exec)
 		void Join(const FString& InAddress);
+
+private:
+	TSubclassOf<UUserWidget> MenuWidgetClass;
+
 };

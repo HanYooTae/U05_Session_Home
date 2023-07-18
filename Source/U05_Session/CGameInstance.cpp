@@ -6,9 +6,8 @@ UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	CLog::Log("GameInstance::Constructor Called");
 
-	TSubclassOf<UUserWidget> menuWidgetClass;
-	CHelpers::GetClass(&menuWidgetClass, "/Game/Widgets/WB_Menu");
-	CLog::Log(menuWidgetClass->GetName());
+	CHelpers::GetClass(&MenuWidgetClass, "/Game/Widgets/WB_Menu");
+	//CLog::Log(MenuWidgetClass->GetName());
 }
 
 // BeginPlay
@@ -17,8 +16,28 @@ void UCGameInstance::Init()
 	Super::Init();
 
 	CLog::Log("GameInstance::Init Called");
+}
 
-	//CreateWidget(this, );
+void UCGameInstance::LoadMenu()
+{
+	CheckNull(MenuWidgetClass);
+
+	UUserWidget* menu = CreateWidget(this, MenuWidgetClass);
+	CheckNull(menu);
+
+	menu->AddToViewport();
+
+	menu->bIsFocusable = true;
+
+	APlayerController* controller = GetFirstLocalPlayerController();
+	CheckNull(controller);
+
+	FInputModeUIOnly inputMode;
+	inputMode.SetWidgetToFocus(menu->TakeWidget());
+	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+
+	controller->SetInputMode(inputMode);
+	controller->bShowMouseCursor = true;
 }
 
 void UCGameInstance::Host()
