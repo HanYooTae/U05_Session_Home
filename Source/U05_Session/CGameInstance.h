@@ -27,9 +27,12 @@ public:
 	UFUNCTION(Exec)
 		void Join(const FString& InAddress) override;
 
+	virtual void ReturnToMainMenu() override;
+
 private:
 	TSubclassOf<UUserWidget> MenuWidgetClass;
 	TSubclassOf<UUserWidget> InGameWidgetClass;
 
 	class UCMenu* Menu;
+
 };

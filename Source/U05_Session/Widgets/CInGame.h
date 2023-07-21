@@ -9,4 +9,20 @@ class U05_SESSION_API UCInGame : public UCMenuBase
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual bool Initialize() override;
+
+private:
+	UFUNCTION()
+		void CancelButtonPressed();
+
+	UFUNCTION()
+		void QuitButtonPressed();
+
+private:
+	UPROPERTY(meta = (BindWidget))
+		class UButton* CancelButton;
+
+	UPROPERTY(meta = (BindWidget))
+		class UButton* QuitButton;
 };

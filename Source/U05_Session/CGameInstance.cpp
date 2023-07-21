@@ -3,6 +3,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Widgets/CMenuBase.h"
 #include "Widgets/CMenu.h"
+#include "OnlineSubsystem.h"
 
 UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -19,6 +20,31 @@ void UCGameInstance::Init()
 	Super::Init();
 
 	CLog::Log("GameInstance::Init Called");
+
+	IOnlineSubsystem* oss = IOnlineSubsystem::Get();
+
+	if (!!oss)
+	{
+		CLog::Log("OSS Name : " + oss->GetSubsystemName().ToString());
+
+		IOnlineSessionPtr sessionInterface = oss->GetSessionInterface();
+
+		//Nullüũ
+		if (sessionInterface.IsValid())
+		{
+
+		}
+
+		else
+		{
+
+		}
+	}
+
+	else
+	{
+		CLog::Log("OSS Not Found!!");
+	}
 }
 
 void UCGameInstance::LoadMenu()
@@ -73,4 +99,11 @@ void UCGameInstance::Join(const FString& InAddress)
 	APlayerController* controller = GetFirstLocalPlayerController();
 	CheckNull(controller);
 	controller->ClientTravel(InAddress, ETravelType::TRAVEL_Absolute);
+}
+
+void UCGameInstance::ReturnToMainMenu()
+{
+	APlayerController* controller = GetFirstLocalPlayerController();
+	CheckNull(controller);
+	controller->ClientTravel("/Game/Maps/MainMenu", ETravelType::TRAVEL_Absolute);
 }

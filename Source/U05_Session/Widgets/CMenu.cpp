@@ -34,6 +34,9 @@ bool UCMenu::Initialize()
 	CheckNullResult(ConfirmJoinMenuButton, false);
 	ConfirmJoinMenuButton->OnClicked.AddDynamic(this, &UCMenu::JoinServer);
 
+	CheckNullResult(QuitButton, false);
+	QuitButton->OnClicked.AddDynamic(this, &UCMenu::QuitGame);
+
 	return true;
 }
 
@@ -70,4 +73,14 @@ void UCMenu::OpenMainMenu()
 	CheckNull(MenuSwitcher);
 	CheckNull(MainMenu);
 	MenuSwitcher->SetActiveWidget(MainMenu);
+}
+
+void UCMenu::QuitGame()
+{
+	UWorld* world = GetWorld();
+	CheckNull(world);
+	
+	APlayerController* controller = world->GetFirstPlayerController();
+	
+	controller->ConsoleCommand("Quit");
 }
