@@ -1,12 +1,15 @@
 #include "CGameInstance.h"
 #include "Global.h"
 #include "Blueprint/UserWidget.h"
+#include "Widgets/CMenuBase.h"
+#include "Widgets/CMenu.h"
 
 UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	CLog::Log("GameInstance::Constructor Called");
 
 	CHelpers::GetClass(&MenuWidgetClass, "/Game/Widgets/WB_Menu");
+	CHelpers::GetClass(&InGameWidgetClass, "/Game/Widgets/WB_InGame");
 	//CLog::Log(MenuWidgetClass->GetName());
 }
 
@@ -22,37 +25,45 @@ void UCGameInstance::LoadMenu()
 {
 	CheckNull(MenuWidgetClass);
 
-	UUserWidget* menu = CreateWidget(this, MenuWidgetClass);
-	CheckNull(menu);
+	Menu = CreateWidget<UCMenu>(this, MenuWidgetClass);
+	CheckNull(Menu);
 
-	menu->AddToViewport();
+	Menu->SetOwingGameInstance(this);
 
-	menu->bIsFocusable = true;
+	Menu->Attach();
+}
 
-	APlayerController* controller = GetFirstLocalPlayerController();
-	CheckNull(controller);
+void UCGameInstance::LoadInGameMenu()
+{
+	CheckNull(InGameWidgetClass);
 
-	FInputModeUIOnly inputMode;
-	inputMode.SetWidgetToFocus(menu->TakeWidget());
-	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	UCMenuBase* inGameWidget = CreateWidget<UCMenuBase>(this, InGameWidgetClass);
+	CheckNull(inGameWidget);
 
-	controller->SetInputMode(inputMode);
-	controller->bShowMouseCursor = true;
+	inGameWidget->SetOwingGameInstance(this);
+
+	inGameWidget->Attach();
 }
 
 void UCGameInstance::Host()
 {
+	if(!!Menu)
+		Menu->Detach();
+	
 	CLog::Print("Host");
 	
-	//-> Everybody Move to Play Map
 	UWorld* world = GetWorld();
 	CheckNull(world);
 
+	//-> Everybody Move to Play Map
 	world->ServerTravel("/Game/Maps/Play?listen");
 }
 
 void UCGameInstance::Join(const FString& InAddress)
 {
+	if (!!Menu)
+		Menu->Detach();
+
 	CLog::Print("Join to " + InAddress);
 	//GetEngine()->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::Printf(TEXT("Join to %s"), InAddress));
 	
