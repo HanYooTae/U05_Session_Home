@@ -3,7 +3,10 @@
 #include "Blueprint/UserWidget.h"
 #include "Widgets/CMenuBase.h"
 #include "Widgets/CMenu.h"
-#include "OnlineSubsystem.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
+
+const static FName SESSION_NAME = L"My Session";
 
 UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -27,17 +30,14 @@ void UCGameInstance::Init()
 	{
 		CLog::Log("OSS Name : " + oss->GetSubsystemName().ToString());
 
-		IOnlineSessionPtr sessionInterface = oss->GetSessionInterface();
-
-		//Nullüũ
-		if (sessionInterface.IsValid())
+		// oss는 interface기 때문에, GetSessionInterface에 대한 재정의가 무조건 있음.
+		// NULL일 수가 없음
+		SessionInterface = oss->GetSessionInterface();		// Session Event Binding
+		
+		if (SessionInterface.IsValid())
 		{
-
-		}
-
-		else
-		{
-
+			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UCGameInstance::OnCreateSessionComplete);
+			SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UCGameInstance::OnDestroySessionComplete);
 		}
 	}
 
@@ -73,16 +73,19 @@ void UCGameInstance::LoadInGameMenu()
 
 void UCGameInstance::Host()
 {
-	if(!!Menu)
-		Menu->Detach();
-	
-	CLog::Print("Host");
-	
-	UWorld* world = GetWorld();
-	CheckNull(world);
+	if (SessionInterface.IsValid())
+	{
+		auto session = SessionInterface->GetNamedSession(SESSION_NAME);
 
-	//-> Everybody Move to Play Map
-	world->ServerTravel("/Game/Maps/Play?listen");
+		if (!!session)
+		{
+			SessionInterface->DestroySession(SESSION_NAME);
+		}
+		else
+		{
+			CreateSession();
+		}
+	}
 }
 
 void UCGameInstance::Join(const FString& InAddress)
@@ -106,4 +109,44 @@ void UCGameInstance::ReturnToMainMenu()
 	APlayerController* controller = GetFirstLocalPlayerController();
 	CheckNull(controller);
 	controller->ClientTravel("/Game/Maps/MainMenu", ETravelType::TRAVEL_Absolute);
+}
+
+void UCGameInstance::OnCreateSessionComplete(FName InSessionName, bool InSuccess)
+{
+	UE_LOG(LogTemp, Error, L"CreateSessionComplete");
+
+	// 세션 생성 실패
+	if (InSuccess == false)
+	{
+		CLog::Log("Could not create Session!!");
+		return;
+	}
+
+	// 세션 생성 성공
+	CLog::Log("Session Name : " + InSessionName.ToString());
+
+	if (!!Menu)
+		Menu->Detach();
+
+	CLog::Print("Host");
+
+	UWorld* world = GetWorld();
+	CheckNull(world);
+
+	//-> Everybody Move to Play Map
+	world->ServerTravel("/Game/Maps/Play?listen");
+}
+
+void UCGameInstance::OnDestroySessionComplete(FName InSessionName, bool InSuccess)
+{
+	UE_LOG(LogTemp, Error, L"DestroySessionComplete");
+
+	if(InSuccess == true)
+		CreateSession();
+}
+
+void UCGameInstance::CreateSession()
+{
+	FOnlineSessionSettings sessionSettings;
+	SessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 }
