@@ -2,7 +2,14 @@
 #include "Components/Button.h"
 #include "Global.h"
 #include "Components/WidgetSwitcher.h"
-#include "Components/EditableTextBox.h"
+#include "Components/ScrollBox.h"
+#include "Components/TextBlock.h"
+#include "CSessionRow.h"
+
+UCMenu::UCMenu(const FObjectInitializer& ObjectInitializer)
+{
+	CHelpers::GetClass(&SessionRowClass, "WidgetBlueprint'/Game/Widgets/WB_SessionRow.WB_SessionRow_C'");
+}
 
 bool UCMenu::Initialize()
 {
@@ -40,6 +47,11 @@ bool UCMenu::Initialize()
 	return true;
 }
 
+void UCMenu::SetSessionList(TArray<FString> InSessionIDs)
+{
+
+}
+
 void UCMenu::HostServer()
 {
 	//GetOwner
@@ -52,11 +64,15 @@ void UCMenu::HostServer()
 void UCMenu::JoinServer()
 {
 	CheckNull(OwingGameInstance);
-	CheckNull(IPAddressField);
+	
+	UWorld* world = GetWorld();
+	CheckNull(world);
 
-	const FString& address = IPAddressField->GetText().ToString();
+	UCSessionRow* sessionRow = CreateWidget<UCSessionRow>(world, SessionRowClass);
+	CheckNull(sessionRow);
 
-	OwingGameInstance->Join(address);
+
+	SessionList->AddChild(sessionRow);
 
 	CLog::Log("Join Button Pressed");
 }
