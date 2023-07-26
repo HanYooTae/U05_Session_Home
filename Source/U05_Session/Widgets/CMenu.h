@@ -17,6 +17,7 @@ protected:
 
 public:
 	void SetSessionList(TArray<FString> InSessionIDs);
+	void SetSelectedRowIndex(uint32 InIndex);
 
 private:
 	UFUNCTION()
@@ -66,4 +67,6 @@ private:
 private:
 	// UUserWidet(부모여도 상관없음)
 	TSubclassOf<class UCSessionRow> SessionRowClass;
+
+	TOptional<uint32> SelectedRowIndex;
 };

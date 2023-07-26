@@ -10,6 +10,21 @@ class U05_SESSION_API UCSessionRow : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	void SetSelfIndex(class UCMenu* InParent, uint32 InIndex);
+
+private:
+	UFUNCTION()
+		void OnClicked();
+
+public:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* SessionName;
+
+private:
+	UPROPERTY(meta = (BindWidget))
+		class UButton* RowButton;
+
+private:
+	class UCMenu* Parent;
+	uint32 SelfIndex;
 };

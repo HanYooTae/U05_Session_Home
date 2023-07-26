@@ -29,6 +29,7 @@ public:
 		void Join(const FString& InAddress) override;
 
 	virtual void ReturnToMainMenu() override;
+	void FindSession() override;
 
 private:
 	void OnCreateSessionComplete(FName InSessionName, bool InSuccess);
