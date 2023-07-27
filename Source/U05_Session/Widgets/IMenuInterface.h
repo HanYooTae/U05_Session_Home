@@ -16,7 +16,7 @@ class U05_SESSION_API IIMenuInterface
 
 public:
 	virtual void Host() = 0;
-	virtual void Join(const FString& InAddress) = 0;
+	virtual void Join(uint32 InSessionIndex) = 0;
 	virtual void ReturnToMainMenu() = 0;
 	virtual void FindSession() = 0;
 };

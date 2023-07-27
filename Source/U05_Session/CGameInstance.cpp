@@ -32,13 +32,15 @@ void UCGameInstance::Init()
 
 		// oss는 interface기 때문에, GetSessionInterface에 대한 재정의가 무조건 있음.
 		// NULL일 수가 없음
-		SessionInterface = oss->GetSessionInterface();		// Session Event Binding
+		// Session Event Binding
+		SessionInterface = oss->GetSessionInterface();
 		
 		if (SessionInterface.IsValid())
 		{
 			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UCGameInstance::OnCreateSessionComplete);
 			SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UCGameInstance::OnDestroySessionComplete);
 			SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UCGameInstance::OnFindSessionComplete);
+			SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UCGameInstance::OnJoinSessionComplete);
 		}
 	}
 
@@ -89,27 +91,15 @@ void UCGameInstance::Host()
 	}
 }
 
-void UCGameInstance::Join(const FString& InAddress)
+void UCGameInstance::Join(uint32 InSessionIndex)
 {
-	CLog::Print("Join to " + InAddress);
-
-	if (!!Menu)
-		Menu->SetSessionList({ "Session1", "Session2" });
-
-
-	/*
+	CheckFalse(SessionInterface.IsValid());
+	CheckFalse(SessionSearch.IsValid());
+	
 	if (!!Menu)
 		Menu->Detach();
 
-	//GetEngine()->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::Printf(TEXT("Join to %s"), InAddress));
-	
-	// Same Code
-	//UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	//GetWorld()->GetFirstPlayerController();
-	APlayerController* controller = GetFirstLocalPlayerController();
-	CheckNull(controller);
-	controller->ClientTravel(InAddress, ETravelType::TRAVEL_Absolute);
-	*/
+	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[InSessionIndex]);
 }
 
 void UCGameInstance::ReturnToMainMenu()
@@ -188,6 +178,45 @@ void UCGameInstance::OnFindSessionComplete(bool InSuccess)
 		
 		Menu->SetSessionList(foundSession);
 	}
+}
+
+void UCGameInstance::OnJoinSessionComplete(FName InSessionName, EOnJoinSessionCompleteResult::Type InResult)
+{
+	FString address;		// 세션의 IP주소를 address에 리턴해줌
+
+	// 조인 실패
+	if (SessionInterface->GetResolvedConnectString(InSessionName, address) == false)
+	{
+		switch (InResult)
+		{
+		case EOnJoinSessionCompleteResult::SessionIsFull:
+			CLog::Log("SessionIsFull");
+			break;
+		case EOnJoinSessionCompleteResult::SessionDoesNotExist:
+			CLog::Log("SessionDoesNotExist");
+			break;
+		case EOnJoinSessionCompleteResult::CouldNotRetrieveAddress:
+			CLog::Log("CouldNotRetrieveAddress");
+			break;
+		case EOnJoinSessionCompleteResult::AlreadyInSession:
+			CLog::Log("AlreadyInSession");
+			break;
+		case EOnJoinSessionCompleteResult::UnknownError:
+			CLog::Log("UnknownError");
+			break;
+		}
+		return;
+	}
+
+	// 조인 성공
+	CLog::Print("Join to" + address);
+	
+	// Same Code
+	//UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//GetWorld()->GetFirstPlayerController();
+	APlayerController* controller = GetFirstLocalPlayerController();
+	CheckNull(controller);
+	controller->ClientTravel(address, ETravelType::TRAVEL_Absolute);
 }
 
 void UCGameInstance::CreateSession()
