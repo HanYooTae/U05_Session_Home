@@ -20,6 +20,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* SessionName;
 
+	UPROPERTY(BlueprintReadOnly)
+		bool bSelfClicked;
+
 private:
 	UPROPERTY(meta = (BindWidget))
 		class UButton* RowButton;

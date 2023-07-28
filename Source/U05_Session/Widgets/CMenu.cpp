@@ -71,6 +71,8 @@ void UCMenu::SetSelectedRowIndex(uint32 InIndex)
 {
 	// 기본 값이 nullptr
 	SelectedRowIndex = InIndex;
+
+	SelectedSessionRow();
 }
 
 void UCMenu::HostServer()
@@ -126,4 +128,14 @@ void UCMenu::QuitGame()
 	APlayerController* controller = world->GetFirstPlayerController();
 	
 	controller->ConsoleCommand("Quit");
+}
+
+void UCMenu::SelectedSessionRow()
+{
+	for (int32 i = 0; i < SessionList->GetChildrenCount(); i++)
+	{
+		UCSessionRow* sessionRow = Cast<UCSessionRow>(SessionList->GetChildAt(i));
+		if (!!sessionRow)
+			sessionRow->bSelfClicked = (SelectedRowIndex.IsSet() && i == SelectedRowIndex);
+	}
 }

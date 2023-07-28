@@ -20,20 +20,14 @@ public:
 	void SetSelectedRowIndex(uint32 InIndex);
 
 private:
-	UFUNCTION()
-		void HostServer();
+	UFUNCTION()	void HostServer();
+	UFUNCTION()	void JoinServer();
+	UFUNCTION()	void OpenJoinMenu();
+	UFUNCTION()	void OpenMainMenu();
+	UFUNCTION()	void QuitGame();
 
-	UFUNCTION()
-		void JoinServer();
-
-	UFUNCTION()
-		void OpenJoinMenu();
-
-	UFUNCTION()
-		void OpenMainMenu();
-
-	UFUNCTION()
-		void QuitGame();
+private:
+	void SelectedSessionRow();
 
 private:
 	UPROPERTY(meta = (BindWidget))
