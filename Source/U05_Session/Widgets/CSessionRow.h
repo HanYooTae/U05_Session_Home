@@ -20,6 +20,12 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* SessionName;
 
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* HostUserName;
+
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* ConnectionFractions;
+
 	UPROPERTY(BlueprintReadOnly)
 		bool bSelfClicked;
 

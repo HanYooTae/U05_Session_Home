@@ -6,7 +6,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 
-const static FName SESSION_NAME = L"My Session";
+const static FName SESSION_NAME = L"GameSession";
 
 UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -163,7 +163,7 @@ void UCGameInstance::OnFindSessionComplete(bool InSuccess)
 		Menu != nullptr &&
 		SessionSearch.IsValid())
 	{
-		TArray<FString> foundSession;
+		TArray<FSessionData> foundSession;
 
 		CLog::Log("Finished Find Session");
 
@@ -171,10 +171,26 @@ void UCGameInstance::OnFindSessionComplete(bool InSuccess)
 		CLog::Log("========<Find Session Results>========");
 		for (const auto& searchResult : SessionSearch->SearchResults)
 		{
-			CLog::Log(" -> Session ID : " + searchResult.GetSessionIdStr());
+			FSessionData data;
+			data.Name = searchResult.GetSessionIdStr();
+			data.MaxPlayers = searchResult.Session.SessionSettings.NumPublicConnections;
+			data.CurrentPlayers = data.MaxPlayers - searchResult.Session.NumOpenPublicConnections;
+			data.HostUserName = searchResult.Session.OwningUserName;
+
+			FString sessionName;	// value값 return
+			if (searchResult.Session.SessionSettings.Get(TEXT("SessionKey"), sessionName))
+			{
+				CLog::Log("Session.Value() => " + sessionName);
+			}
+			else
+			{
+				CLog::Log("Session Settings Key Not Found");
+			}
+
+			CLog::Log(" -> Session ID : " + data.Name);
 			CLog::Log(" -> Ping : " + FString::FromInt(searchResult.PingInMs));
 
-			foundSession.Add(searchResult.GetSessionIdStr());
+			foundSession.Add(data);
 		}
 		CLog::Log("======================================");
 		
@@ -226,10 +242,21 @@ void UCGameInstance::CreateSession()
 	if (SessionInterface.IsValid())
 	{
 		FOnlineSessionSettings sessionSettings;
-		sessionSettings.bIsLANMatch = false;
+
+		if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
+		{
+			sessionSettings.bIsLANMatch = true;
+			sessionSettings.bUsesPresence = false;
+		}
+		else
+		{
+			sessionSettings.bIsLANMatch = false;
+			sessionSettings.bUsesPresence = true;
+		}
+
 		sessionSettings.NumPublicConnections = 5;
 		sessionSettings.bShouldAdvertise = true;
-		sessionSettings.bUsesPresence = true;
+		sessionSettings.Set(TEXT("SessionKey"), FString("SessionName"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 		SessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 	}

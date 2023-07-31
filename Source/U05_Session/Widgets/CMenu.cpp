@@ -47,7 +47,7 @@ bool UCMenu::Initialize()
 	return true;
 }
 
-void UCMenu::SetSessionList(TArray<FString> InSessionIDs)
+void UCMenu::SetSessionList(TArray<FSessionData> InSessionDatas)
 {
 	UWorld* world = GetWorld();
 	CheckNull(world);
@@ -55,12 +55,17 @@ void UCMenu::SetSessionList(TArray<FString> InSessionIDs)
 	SessionList->ClearChildren();
 
 	uint32 i = 0;
-	for (const auto& id : InSessionIDs)
+	for (const auto& data : InSessionDatas)
 	{
 		UCSessionRow* sessionRow = CreateWidget<UCSessionRow>(world, SessionRowClass);
 		CheckNull(sessionRow);
 
-		sessionRow->SessionName->SetText(FText::FromString(id));
+		sessionRow->SessionName->SetText(FText::FromString(data.Name));
+		sessionRow->HostUserName->SetText(FText::FromString(data.HostUserName));
+
+		FString fractionStr = FString::Printf(L"%d/%d", data.CurrentPlayers, data.MaxPlayers);
+		sessionRow->ConnectionFractions->SetText(FText::FromString(fractionStr));
+
 		sessionRow->SetSelfIndex(this, i++);
 
 		SessionList->AddChild(sessionRow);
