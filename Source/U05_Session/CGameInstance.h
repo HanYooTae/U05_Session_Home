@@ -24,7 +24,7 @@ public:
 		void LoadInGameMenu();
 
 	UFUNCTION(Exec)
-		void Host() override;
+		void Host(const FString& InSessionName) override;
 
 	UFUNCTION(Exec)
 		void Join(uint32 InSessionIndex) override;
@@ -48,4 +48,6 @@ private:
 
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+
+	FString DesiredSessionName;
 };

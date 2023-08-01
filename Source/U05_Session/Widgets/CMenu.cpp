@@ -4,6 +4,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
+#include "Components/EditableTextBox.h"
 #include "CSessionRow.h"
 
 UCMenu::UCMenu(const FObjectInitializer& ObjectInitializer)
@@ -30,7 +31,13 @@ bool UCMenu::Initialize()
 	//}
 
 	CheckNullResult(HostButton, false);
-	HostButton->OnClicked.AddDynamic(this, &UCMenu::HostServer);
+	HostButton->OnClicked.AddDynamic(this, &UCMenu::OpenHostMenu);
+
+	CheckNullResult(CancelHostMenuButton, false);
+	CancelHostMenuButton->OnClicked.AddDynamic(this, &UCMenu::OpenMainMenu);
+
+	CheckNullResult(ConfirmHostMenuButton, false);
+	ConfirmHostMenuButton->OnClicked.AddDynamic(this, &UCMenu::HostServer);
 
 	CheckNullResult(JoinButton, false);
 	JoinButton->OnClicked.AddDynamic(this, &UCMenu::OpenJoinMenu);
@@ -84,7 +91,11 @@ void UCMenu::HostServer()
 {
 	//GetOwner
 	CheckNull(OwingGameInstance);
-	OwingGameInstance->Host();
+
+	// 동일한 세션이름으로 생성되지 않게 하려면, TArray에 sessionName을 저장한 후에 sessionName과 이름이 같다면 생성X
+	FString sessionName = SessionNameText->GetText().ToString();
+
+	OwingGameInstance->Host(sessionName);
 
 	CLog::Log("Host Button Pressed");
 }
@@ -123,6 +134,13 @@ void UCMenu::OpenMainMenu()
 	CheckNull(MenuSwitcher);
 	CheckNull(MainMenu);
 	MenuSwitcher->SetActiveWidget(MainMenu);
+}
+
+void UCMenu::OpenHostMenu()
+{
+	CheckNull(MenuSwitcher);
+	CheckNull(HostMenu);
+	MenuSwitcher->SetActiveWidget(HostMenu);
 }
 
 void UCMenu::QuitGame()
