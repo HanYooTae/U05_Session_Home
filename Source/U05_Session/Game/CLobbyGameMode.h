@@ -14,5 +14,8 @@ public:
 	void Logout(AController* Exiting) override;
 
 private:
+	void StartGame();
+
+private:
 	uint32 NumberOfPlayers;
 };

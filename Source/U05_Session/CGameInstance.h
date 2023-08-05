@@ -37,8 +37,12 @@ private:
 	void OnDestroySessionComplete(FName InSessionName, bool InSuccess);
 	void OnFindSessionComplete(bool InSuccess);
 	void OnJoinSessionComplete(FName InSessionName, EOnJoinSessionCompleteResult::Type InResult);
+	void OnNetworkFailure(UWorld* InWorld, UNetDriver* InNetDriver, ENetworkFailure::Type InFailureReason, const FString& InErrorMessage);
 
 	void CreateSession();
+
+public:
+	void StartSession();
 
 private:
 	TSubclassOf<UUserWidget> MenuWidgetClass;

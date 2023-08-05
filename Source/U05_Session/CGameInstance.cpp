@@ -49,6 +49,9 @@ void UCGameInstance::Init()
 	{
 		CLog::Log("OSS Not Found!!");
 	}
+
+	if(!!GEngine)
+		GEngine->OnNetworkFailure().AddUObject(this, &UCGameInstance::OnNetworkFailure);
 }
 
 void UCGameInstance::LoadMenu()
@@ -256,10 +259,23 @@ void UCGameInstance::CreateSession()
 			sessionSettings.bUsesPresence = true;
 		}
 
-		sessionSettings.NumPublicConnections = 5;
+		sessionSettings.NumPublicConnections = 3;
 		sessionSettings.bShouldAdvertise = true;
 		sessionSettings.Set(SESSION_SETTINGS_KEY, DesiredSessionName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 		SessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 	}
+}
+
+void UCGameInstance::StartSession()
+{
+	CheckFalse(SessionInterface.IsValid());
+	SessionInterface->StartSession(SESSION_NAME);
+}
+
+void UCGameInstance::OnNetworkFailure(UWorld* InWorld, UNetDriver* InNetDriver, ENetworkFailure::Type InFailureReason, const FString& InErrorMessage)
+{
+	CLog::Print("Network Error Message : " + InErrorMessage);
+
+	ReturnToMainMenu();
 }
