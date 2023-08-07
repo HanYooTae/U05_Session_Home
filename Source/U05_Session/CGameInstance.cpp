@@ -6,7 +6,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 
-const static FName SESSION_NAME = L"GameSession";
+const static FName SESSION_NAME = L"GameSession99";
 const static FName SESSION_SETTINGS_KEY = TEXT("SessionKey");
 
 UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
@@ -259,7 +259,7 @@ void UCGameInstance::CreateSession()
 			sessionSettings.bUsesPresence = true;
 		}
 
-		sessionSettings.NumPublicConnections = 3;
+		sessionSettings.NumPublicConnections = 4;
 		sessionSettings.bShouldAdvertise = true;
 		sessionSettings.Set(SESSION_SETTINGS_KEY, DesiredSessionName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
