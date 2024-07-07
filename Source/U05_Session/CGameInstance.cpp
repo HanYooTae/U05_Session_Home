@@ -6,7 +6,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 
-const static FName SESSION_NAME = L"GameSession99";
+const static FName SESSION_NAME = L"GameSession";
 const static FName SESSION_SETTINGS_KEY = TEXT("SessionKey");
 
 UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
